@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello WebSocket</title>
+<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="main.css" rel="stylesheet">
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+<script src="/webjars/stomp-websocket/stomp.min.js"></script>
+<script src="/webjars/angularjs/angular.min.js"></script>
+<script src="app.js"></script>
+</head>
+<body ng-app="app" ng-controller="home as home" ng-init="connect()"
+	ng-clock>
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="col-md-6">
+				<form class="form-inline">
+					<div class="form-group">
+						<label for="connect">WebSocket connection:</label>
+						<button id="connect" class="btn btn-primary" type="submit"
+							ng-click="connect()" ng-disabled="connected">Connect</button>
+						<button id="disconnect" class="btn btn-warning" type="submit"
+							ng-click="disconnect()" ng-disabled="!connected">Disconnect</button>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-6">
+				<form class="form-inline">
+					<div class="form-group">
+						<input ng-model="roomId" type="text" class="form-control"
+							   placeholder="Room ID: e.g. demo" aria-describedby="basic-addon1" ng-disabled="!connected || subscribed">
+						<button id="subscribe" class="btn btn-primary" type="submit"
+								ng-click="join()" ng-disabled="!connected || subscribed">Subscribe</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</nav>
+	<div id="main" class="container">
+		<div class="col-md-12">{{error}}</div>
+		<div class="col-md-3">
+			<h3>Participants</h3>
+			<table id="participants" class="table table-striped">
+				<tbody>
+					<tr ng-repeat="s in subscriptions">
+						<td>{{s.userId}}:<b>{{s.sessionId}}</b><span ng-show="isTyping(s.typingTime)">(typing...)</span></td>
+					</tr>
+				</tbody>
+			</table>
+			<h3>Typings</h3>
+			<table id="typing" class="table table-striped">
+				<tbody>
+				<tr ng-repeat="t in typings">
+					<td>{{t.userId}}:<b>{{t.sessionId}}</b></td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="col-md-9">
+			<h3>Messages</h3>
+			<table id="messages" class="table table-striped">
+				<tbody>
+					<tr ng-repeat="m in messages">
+						<td>{{m.userId}}:<b>{{m.sessionId}}</b>: {{m.message}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<footer class="footer">
+		<div class="container">
+			<div class="input-group" ng-show="connected && subscribed">
+				<span class="input-group-addon" id="basic-addon1">Message</span>
+				<input ng-model="message" type="text" class="form-control"
+					placeholder="Message" aria-describedby="basic-addon1" ng-keyup="$event.keyCode == 13 && send()" ng-change="typing()">
+				<span class="input-group-btn">
+					<button class="btn btn-primary" type="submit" ng-click="send()">Send</button>
+				</span>
+			</div>
+		</div>
+	</footer>
+</body>
+</html>

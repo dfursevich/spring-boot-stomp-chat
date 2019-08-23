@@ -1,0 +1,20 @@
+version: '3.5'
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: dfursevich/rabbitmq-stomp:3.7
+    ports:
+      - "15672:15672"
+      - "61613:61613"
+      - "5672:5672"
+      - "5671:5671"
+  mongo:
+    container_name: mongo
+    image: mongo:4.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - ../data/mongo:/data
+    command: --smallfiles --bind_ip_all
+    restart: always
