@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello WebSocket</title>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/webjars/angularjs/angular.min.js"></script>
+    <script src="app2.js"></script>
+</head>
+<body ng-app="app" ng-controller="home as home" ng-init="connect()"
+      ng-clock>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="col-md-6">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="connect">WebSocket connection:</label>
+                    <button id="connect" class="btn btn-primary" type="submit"
+                            ng-click="connect()" ng-disabled="connected">Connect
+                    </button>
+                    <button id="disconnect" class="btn btn-warning" type="submit"
+                            ng-click="disconnect()" ng-disabled="!connected">Disconnect
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</nav>
+<div id="main" class="container">
+    <div class="col-md-12">{{error}}</div>
+    <div class="col-md-12">
+        <h3>Send To User</h3>
+        <form class="form-inline">
+            <div class="form-group">
+                <table id="users" class="table table-striped">
+                    <tbody>
+                    <tr>
+                        <td><input ng-model="userId" type="text" class="form-control"
+                                   placeholder="User ID: e.g. user" aria-describedby="basic-addon1"
+                                   ng-disabled="!connected">
+                        </td>
+                        <td><input ng-model="message" type="text" class="form-control"
+                                   placeholder="Message: e.g. hello" aria-describedby="basic-addon1"
+                                   ng-disabled="!connected">
+                        </td>
+                        <td>
+                            <button id="send" class="btn btn-primary" type="submit" ng-click="sendToUser()"
+                                    ng-disabled="!connected">Send
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-3">
+        <h3>Inbox</h3>
+        <ul class="list-group">
+            <li ng-repeat="item in inboxItems.slice().reverse()" class="list-group-item" ng-click="startRoom(item)">
+                <b>{{item.peerId}}</b>: {{item.message}}
+                <span class="pull-right badge badge-pill badge-primary">{{item.unread}}</span>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-9" ng-show="roomId != null">
+        <h3>{{peerId}}</h3>
+        <div ng-repeat="m in messages"><b>{{m.sentBy}}</b>: {{m.message}}</div>
+        <div class="input-group">
+            <input ng-model="message" type="text" class="form-control"
+                   placeholder="Type a message" aria-describedby="basic-addon1"
+                   ng-keyup="$event.keyCode == 13 && sendToRoom()">
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="submit" ng-click="sendToRoom()">Send</button>
+            </span>
+        </div>
+    </div>
+</div>
+<!--<footer class="footer">-->
+<!--    <div class="container">-->
+<!--        <div class="input-group" ng-show="connected && subscribed">-->
+<!--            <span class="input-group-addon" id="basic-addon1">Message</span>-->
+<!--            <input ng-model="message" type="text" class="form-control"-->
+<!--                   placeholder="Message" aria-describedby="basic-addon1" ng-keyup="$event.keyCode == 13 && send()"-->
+<!--                   ng-change="typing()">-->
+<!--            <span class="input-group-btn">-->
+<!--					<button class="btn btn-primary" type="submit" ng-click="send()">Send</button>-->
+<!--				</span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</footer>-->
+</body>
+</html>
